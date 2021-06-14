@@ -1,79 +1,58 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#define TRUE 1
-#define FALSE 0
 
-/* This function sets all the characters of
-** a string to the first character of the alphabet
+#define ALPH_SIZE 2
+/*
+** A lot of improvements could be made such as
+** getting the alphabet at the runtime and not
+** using the word counter as a global variable.
 */
-void resetString(char *string, char *alphabet, int size){
+
+char alphabet[ALPH_SIZE] = {'0', '1'};
+
+void initiateWord(char *word, int length){
     int i;
-    for(i = 0; i<size; i++){
-        string[i] = alphabet[0];
+    for(i = 0; i < length; i++){
+        word[i] = '\0';
     }
+    return;
 }
 
-/* This function checks if all the characters of a string
-** is the last characters of an alphabet. This is used to
-** if the last string in a given length is printed out,
-** then increase the length of the string by one.
+/*
+** char *word -> Array itself
+** int length -> Length of the array
+** int start  -> Current index the function is working on
 */
-int checkIfAllLastChar(char *string, char *alphabet, int size){
-    int i;
-    for(i = 0; i<size; i++){
-        if(string[i]!=alphabet[strlen(alphabet)-1]){
-            return FALSE;
-        }
-    }
-    return TRUE;
-}
-
-#if 0 //This was for testing
-void makeAllLastChar(char *string, char *alphabet, int size){
-    int i;
-    for(i = 0; i<size; i++){
-        string[i] = alphabet[strlen(alphabet)-1];
-    }
-}
-#endif // 0
-
-/* The function below doesn't work properly
-** and I don't exactly know why.
-*/
-void PrintAllStrings(char *string, char *alphabet, int size){
-    int i;
-    int j;
-    if(checkIfAllLastChar(string, alphabet, size)==TRUE){
-        if(size == 0){
-            printf("\n");
-            usleep(300000);
-            return;
-        }
+unsigned __int64 word_count = 0;
+void printAll(char *word, int length, int start){
+    if(start == length){
+        printf("%s\n", word);
+        word_count++;
         return;
     }
-
-    for(i = 0; i<size; i++){
-        for(j = 0; j<strlen(alphabet); j++){
-            string[i] = alphabet[j];
-            printf("%c", string[0]);
-            PrintAllStrings(string+1, alphabet, size-1);
-        }
+    int i;
+    for(i = 0; i < ALPH_SIZE; i++){
+        word[start] = alphabet[i];
+        printAll(word, length, start+1);
     }
 }
 
 int main(void){
-    char alphabet[2] = {'a', 'b'};
-    char *string;
-    int size = 1;
+    int max_lenght;
+    printf("What is the max length of a word? ");
+    scanf("%d", &max_lenght);
+    max_lenght++;
 
-    string = (char *)malloc(sizeof(char));
+    char *word;
+    word = (char *)malloc(sizeof(char)*(max_lenght));
+    initiateWord(word, max_lenght);
 
-    for(;;){
-        resetString(string, alphabet, size);
-        PrintAllStrings(string, alphabet, size);
-        size++;
-        string = realloc(string, size);
+    int i;
+    for(i = 1; i < max_lenght; i++){
+        printAll(word, i, 0);
     }
-}
 
+    printf("Total word count: %d", word_count);
+
+    return 0;
+}
